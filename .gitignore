@@ -2,3 +2,6 @@
 .vscode
 *.pyc
 local_vars.json
+*.egg-info
+build
+dist
