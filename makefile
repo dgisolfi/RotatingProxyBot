@@ -7,16 +7,16 @@ version=0.0.1
 intro:
 	@echo "\nRotatingProxyBot v$(version)"
 
-# init:
-#     @python3 -m pip install -r requirements.txt
+init:
+	@python3 -m pip install -r requirements.txt
 
 clean:
-	-rmdir -r ./build
-	-rmdir -r ./dist
-	-rm ./$(repo).egg-info
+	-rm -r ./build
+	-rm -r ./dist
+	-rm -r ./$(repo).egg-info
 
 test:
-	@python3 -m pytest
+	@python3 -m pytest -s
 
 build:
 	@python setup.py sdist
@@ -25,6 +25,9 @@ publish:
 	@python3 -m twine upload dist/*
 
 install:
-	@python setup.py install
+	@python3 -m pip install .
 
-.PHONY: clean test build
+uninstall:
+	@python3 -m pip uninstall $(repo)
+
+.PHONY: init clean test build

@@ -10,7 +10,7 @@ A Bot that acts as a Rotating Proxy Crawler, simulating many clients to a single
 The Rotating Proxy Bot can be run with purely python, to do so import the bot into a python file and use the following to run it.
 ```python
 #!/usr/bin/python3
-from .src.Bot import *
+from RotatingProxyBot.bot import ProxyBot
 
 # Create new custom bot
 bot = RotatingProxyBot(
