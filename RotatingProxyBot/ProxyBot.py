@@ -10,14 +10,14 @@ import time
 class ProxyBot:
     def __init__(self, *args, **kwargs):
         self.id = kwargs.pop('id', 0)
-        self.address = kwargs.pop('address', 'https://jsonplaceholder.typicode.com/users')
+        self.address = kwargs.pop('address', 'http://httpbin.org/ip')
         self.method = kwargs.pop('method', 'GET')
         self.params = kwargs.pop('reqs_params', False)
-        self.reqs_per_int = kwargs.pop('reqs_per_int', False)
         self.desired_reqs = kwargs.pop('reqs', 0)
+        self.reqs_per_int = kwargs.pop('reqs_per_int', self.desired_reqs)
         self.keep_alive = kwargs.pop('keep_alive', False)
-        self.should_wait = kwargs.pop('wait', False)
-        self.wait_time = kwargs.pop('wait_time', 600) # 10 mins in seconds
+        self.wait_time = kwargs.pop('wait_time', 0)
+
         self.rotating_proxy = RotatingProxy()
         
         self.proxy = ''
@@ -81,9 +81,11 @@ class ProxyBot:
         self.enabled = True
         while self.enabled:
             try:
-                if not self.keep_alive:
-                    if self.current_req >= self.desired_reqs:
-                        self.enabled = False
+                if self.current_req >= self.desired_reqs:
+                    self.enabled = False
+                # if self.keep_alive:
+
+                # if self.reqs_per_int > 0:                  
                 # Every n requests the Bot will wait for a given time to avoid overflowing server
                 if self.current_req == self.req_count:
                     if not self.reqs_per_int:
