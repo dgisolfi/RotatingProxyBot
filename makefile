@@ -16,7 +16,8 @@ clean:
 	-rm -r ./$(repo).egg-info
 
 test:
-	@python3 -m pytest -s
+	# @python3 -m pytest -s
+	@python3 -m pytest
 
 build:
 	@python setup.py sdist

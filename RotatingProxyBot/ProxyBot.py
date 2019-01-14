@@ -13,12 +13,19 @@ class ProxyBot:
         self.address = kwargs.pop('address', 'http://httpbin.org/ip')
         self.method = kwargs.pop('method', 'GET')
         self.params = kwargs.pop('reqs_params', False)
-        self.desired_reqs = kwargs.pop('reqs', 0)
+        self.desired_reqs = kwargs.pop('desired_reqs', 0)
         self.reqs_per_int = kwargs.pop('reqs_per_int', self.desired_reqs)
         self.keep_alive = kwargs.pop('keep_alive', False)
         self.wait_time = kwargs.pop('wait_time', 0)
-
-        self.rotating_proxy = RotatingProxy()
+        self.proxy_api = kwargs.pop('proxy_api', None)
+        self.proxy_list = kwargs.pop('proxy_file', None)
+        
+        if self.proxy_api != None:
+            self.rotating_proxy = RotatingProxy(proxy_api=self.proxy_api)
+        elif self.proxy_list != None:
+            self.rotating_proxy = RotatingProxy(proxy_file=self.proxy_list)
+        else:
+            self.rotating_proxy = RotatingProxy()
         
         self.proxy = ''
         self.current_req = 0
@@ -77,39 +84,39 @@ class ProxyBot:
         for tick in tqdm(range(self.wait_time)):
             time.sleep(1)
 
+    def preformRotate(self):
+        self.proxy = self.rotating_proxy.rotate()
+
+        if self.method == 'GET':
+            response = self.getRequest({'https':self.proxy})
+        elif self.method == 'POST':
+            response = self.postRequest({'https':self.proxy})
+        else:
+            raise ValueError(f'Method: {self.method} is not valid.\nValid Methods GET or POST')
+        
+         # Check if the proxy was bad
+        if response == 'proxy err':
+            self.preformRotate()
+        else:
+            return response
+
     def enable(self):
         self.enabled = True
         while self.enabled:
             try:
-                if self.current_req >= self.desired_reqs:
-                    self.enabled = False
-                # if self.keep_alive:
-
-                # if self.reqs_per_int > 0:                  
+                if not self.keep_alive:
+                    if self.req_count >= self.desired_reqs:
+                        self.enabled = False
+                            
                 # Every n requests the Bot will wait for a given time to avoid overflowing server
-                if self.current_req == self.req_count:
-                    if not self.reqs_per_int:
-                        continue
-                    elif self.should_wait:
-                        self.wait()
-                    self.req_count = 0
+                if self.current_req == self.reqs_per_int:
+                    self.current_req = 0
+                    self.wait()
                 else:
-                    self.proxy = self.rotating_proxy.rotate()
+                    self.preformRotate()
+                    self.current_req += 1
+                    self.req_count += 1
 
-                    if self.method == 'GET':
-                        response = self.getRequest({'https':self.proxy})
-                    elif self.method == 'POST':
-                        response = self.postRequest({'https':self.proxy})
-                    else:
-                        raise ValueError(f'Method: {self.method} is not valid.\nValid Methods GET or POST')
-                  
-                    # Check if the proxy was bad
-                    if response == 'proxy err':
-                        continue
-                    else:
-                        print(response)
-                        self.current_req += 1
-                        self.req_count += 1
 
             except KeyboardInterrupt:
                 self.enabled = False
