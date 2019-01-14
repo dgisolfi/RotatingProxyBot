@@ -5,3 +5,5 @@ local_vars.json
 *.egg-info
 build
 dist
+test.py
+.pytest_cache

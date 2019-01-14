@@ -2,8 +2,8 @@
 # Date: 2019-1-9
 
 from RotatingProxyBot import ProxyBot
-import os
 import pytest
+
 
 class TestRotatingProxyBot:
     test_id = 1
@@ -21,39 +21,6 @@ class TestRotatingProxyBot:
         assert proxy != ''
         self.test_id += 1
 
-    def testImportProxyFile(self):
-        fake_proxies = [
-            '0.0.0.0:80',
-            '0.0.0.0:8080',
-            '0.0.0.0:9090',
-        ]
-        # create a test file of proxies
-        proxies = open('proxies.txt','w+')
-
-        for proxy in fake_proxies:
-            proxies.write(f'{proxy}\n')
-
-        proxies.close()
-        # Create an example bot and tell it to 
-        # use the list of proxies in the file
-        bot = ProxyBot(
-            id=self.test_id,
-            desired_reqs=3,
-            reqs_per_int=1,
-            wait_time=10,
-            proxy_file='proxies.txt'
-        )
-        self.test_id += 1
-
-        # The rotate function gets the first element of the proxies array 
-        # so assert that the proxies put to file are the same in the bots proxy list
-        for proxy in fake_proxies:
-            prox = bot.rotating_proxy.rotate()
-            print(prox, proxy)
-            assert prox == proxy
-
-        os.remove('proxies.txt')
-
     # Final test, run the bot and ensure it doesnt fail
     def testBot(self):
         # create a new instance of the bot with basic arguements
@@ -63,6 +30,7 @@ class TestRotatingProxyBot:
             method='GET',
             desired_reqs=2,
             reqs_per_int=1,
+            wait_time=3
         )
         bot.enable()
         self.test_id += 1
