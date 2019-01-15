@@ -1,7 +1,5 @@
-# RotatingProxyBot
+# RotatingProxyBot [![RotatingProxyBot version](https://img.shields.io/pypi/v/RotatingProxyBot.svg)](https://pypi.org/project/instapy-cli)
 A Bot that uses a Rotating Proxy to simulate many clients making a request to a single server
-
-**Version 0.0.3**
 
 ### Author
 
